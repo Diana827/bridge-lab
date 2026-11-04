@@ -4,6 +4,14 @@
 
 BRIDGE LAB takes one scientific question, examines it through five lenses (mathematics, physics, chemistry, biology, software), and returns the next experiment worth running, ranked, with the result that would prove the plan wrong. This demo covers cell-based drug-combination screening on the public NCI-ALMANAC dataset.
 
+![BRIDGE LAB homepage](docs/images/homepage-hero.png)
+
+*The demo homepage: one question, five lenses, one experiment worth running.*
+
+![Lenses tab — where the lenses interfere](docs/images/lenses-simulation.png)
+
+*The Lenses tab: a scripted illustration of the five lenses challenging each other before the Transfer Judge decides.*
+
 Built during the Meta Global AI Developer Hackathon (Indie Developer track).
 
 ## What it does
