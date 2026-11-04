@@ -17,7 +17,7 @@ Built during the Meta Global AI Developer Hackathon (Indie Developer track).
 ## What it does
 
 1. You ask a research question (for example: which drug combinations should we validate next with 5% of the screening budget?).
-2. Nine roles run on `muse-spark-1.3` through the Meta Model API: Problem Structurer, Mathematics, Physics, Chemistry, Biology Validator, Transfer Judge, Critic, Reporter, plus a review step where the researcher can steer. Python executes the plan and computes every number. The model never produces a score.
+2. Eight roles run on `muse-spark-1.3` through the Meta Model API: Problem Structurer, Mathematics, Physics, Chemistry, Biology Validator, Transfer Judge, Critic, Reporter. Two further stages are not model calls: Python execution, which runs the plan and computes every number (the model never produces a score), and a human review step where the researcher can steer.
 3. The Transfer Judge picks one ranking method from a fixed allowlist. Python ranks every drug-pair x cell-line candidate on training data only and shows the top candidates.
 4. The Critic and Reporter judge the executed result. A verdict ceiling set by code stops them from claiming more than the evidence supports. A live run reads no held-out data, so its verdict stays "needs more evidence" by design.
 
@@ -40,7 +40,6 @@ Ranking methods: `exact_pair_mean`, `drug_mean`, `pair_frequency`, `drug_cell_me
   - Oct 29: seal E0003 created and the sealed comparison executed (see the Audit tab).
   - Nov 1 to Nov 4: ranking methods `drug_cell_mean` and `structure_cell_knn`, harness v2, the E0004 preregistration draft, the RDKit structure comparison, and the demo page.
 - **Third-party material:** listed in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
-- **Not medical advice:** no patient, treatment or dosing advice. Cell-based screening only.
 
 ## Run it
 
@@ -66,7 +65,9 @@ Tests (offline, no API calls): `python3 server/test_e0004.py` (21 tests, includi
 | `server/` | Local server, live run and computational-test runners, tests |
 | `bridgelab/` | Pipeline, ledger, seal, verdict ceiling, comparison scorer, decision compilers (`decision_compiler_v2.py`), harness v2 |
 | `prompts/` | Role prompts |
+| `comparison-prereg-v4/` | Sealed comparison E0003: preregistration, packet, pair split, train table, hidden candidate list |
 | `comparison-prereg-v5/` | E0004 preregistration draft |
+| `evidence/` | Recorded live-run ledgers and the E0003 sealed-run output |
 | `scripts/` | RDKit structure comparison, packet hashing, model smoke test |
 
 ## Data and credits
