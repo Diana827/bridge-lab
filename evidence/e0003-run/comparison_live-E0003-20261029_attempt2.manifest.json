@@ -1,0 +1,100 @@
+{
+ "attempt_history": [
+  {
+   "attempt": 1,
+   "outcome": "interrupted by platform VM replacement before any scoring; no output produced; hidden gate not called as of last observation",
+   "record": "runs/e0003_attempt1_interrupted.md"
+  },
+  {
+   "attempt": 2,
+   "outcome": "completed; authorized by Diana's explicit relaunch approval",
+   "run_id": "live-E0003-20261029-attempt2"
+  }
+ ],
+ "baseline_arm": "failed at every index (invalid_selection / invalid_json_after_retries; 3 attempts each) \u2014 scored 0 under ITT",
+ "bootstrap": {
+  "ci": null,
+  "n_bootstrap": 1000,
+  "n_effective": 0,
+  "note": "paired bootstrap undefined: the failed baseline produced no valid selection to pair against",
+  "seed": 42
+ },
+ "budgets": [
+  3125,
+  6251,
+  12502
+ ],
+ "claim_gate": {
+  "claim_superiority": false,
+  "reason": "the gate also requires the primary-budget paired CI to exclude 0; no CI could be computed",
+  "win_count": 3,
+  "wins_required": 2
+ },
+ "code_hash": "e7337ad3c610e2ca02827a2b3c6de1278ed1ffb41c094d09a0a640ef2df73ffb",
+ "cost": {
+  "cost": "MISSING",
+  "currency": "USD",
+  "price_config_source": "none \u2014 no official price recorded",
+  "price_config_version": "none"
+ },
+ "elapsed_seconds": 1298.529,
+ "gate": {
+  "baseline_status": "failed",
+  "harness_status": "ok",
+  "label_loader_calls": 1
+ },
+ "harness_arm": "ok at every index; no judge returned none",
+ "harness_prompts_combined_sha256": "9d34668eb547ef71c855b9d4b46d28fa6d8b71134d02d136aa61a69db3042ce7",
+ "label_coverage": {
+  "candidates": 62510,
+  "labeled": 62510,
+  "unlabeled": 0
+ },
+ "ledger_entries": 131,
+ "ledger_verify": true,
+ "mode": "SEALED COMPARISON (live arms)",
+ "packet_hash": "478d0edbe60150de11e4e364d64312fc979c4b9b818ab9390d837b2d877409e5",
+ "per_budget": {
+  "12502": {
+   "baseline_precision": 0.0,
+   "ci_high": null,
+   "ci_low": null,
+   "difference": 0.5034394496880499,
+   "harness_precision": 0.5034394496880499,
+   "win": true
+  },
+  "3125": {
+   "baseline_precision": 0.0,
+   "ci_high": null,
+   "ci_low": null,
+   "difference": 0.60704,
+   "harness_precision": 0.60704,
+   "win": true
+  },
+  "6251": {
+   "baseline_precision": 0.0,
+   "ci_high": null,
+   "ci_low": null,
+   "difference": 0.5768677011678132,
+   "harness_precision": 0.5768677011678132,
+   "win": true
+  }
+ },
+ "report_file": "runs/comparison_live-E0003-20261029_attempt2.json",
+ "report_file_sha256": "d8a9e558f4c327f93f3d97ad3cdd2d193c54958e8d7c7a6ee7600e59325db18e",
+ "result_manifest_version": 1,
+ "run_id": "live-E0003-20261029-attempt2",
+ "run_indices": [
+  0,
+  1,
+  2
+ ],
+ "seal_hash": "a7d7ae84a3d8e6ae0acac0f3ecb968aba5a2240ce25c7de32c24077834b897e1",
+ "seal_id": "E0003",
+ "usage": {
+  "completion_tokens": 136935,
+  "model_calls": 56,
+  "prompt_tokens": 285783,
+  "total_tokens": 422718
+ }
+}
