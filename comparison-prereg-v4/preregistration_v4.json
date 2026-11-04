@@ -1,0 +1,471 @@
+{
+ "analysis_rules": {
+  "ablations_diagnostic_only": [
+   "full harness",
+   "minus Critic",
+   "minus Validator",
+   "minus seal (post-hoc criteria change allowed; negative control)",
+   "non-independent experts",
+   "Validator-selects (breaks separation rule; diagnostic only)"
+  ],
+  "claim_gate": "ALL must pass before any superiority claim: (1) paired-by-pair bootstrap 95% CI on precision difference (harness - baseline) excludes 0 (bootstrap resamples PAIRS, not items); (2) the win holds at >= 2 of the 3 budgets; (3) all three budgets reported. A single pair-cell slice is a mechanism demo only and carries zero evidential weight for superiority.",
+  "external_baselines": [
+   "random selection (seed 42, Python-only)",
+   "one-shot ranking by train means",
+   "class-pair frequency baseline"
+  ],
+  "primary": "Precision at the 10% budget: hits_selected / 6251, Python-scored, intention-to-treat.",
+  "repeats": "Each arm repeated over 3 fixed run indices; variance across repeats reported, not hidden.",
+  "secondary": [
+   "Precision at 5% (3125) and 20% (12502)",
+   "Recall@budget (hits_selected / total hidden hits)",
+   "Mean observed_score of selected items",
+   "Lift vs random baseline and vs frequency baseline at the same budget",
+   "Borderline-item count among selections",
+   "Per-protocol precision (failed runs excluded, labelled)"
+  ]
+ },
+ "arms_run": false,
+ "baseline_prompt": {
+  "file": "comparison-prereg-v3/baseline_prompt.md",
+  "instantiation": "The {budget_count} placeholder is replaced at run time with the frozen count for that budget only.",
+  "sha256": "39f95651ae508f71eed17ea2fc373f43a7629a08c92293cbcaf1dfc6266d1a8f",
+  "version": "baseline_prompt.md v1, 2026-10-27"
+ },
+ "benchmark": {
+  "report": "runs/benchmark_report.json (time and memory recorded; determinism verified by two runs).",
+  "scope": "62,510 synthetic candidates, frozen budgets, bootstrap 1000, seed 42; no real ALMANAC file read.",
+  "script": "scripts/benchmark_scorer.py"
+ },
+ "budgets": {
+  "counts": {
+   "0.05": 3125,
+   "0.1": 6251,
+   "0.2": 12502
+  },
+  "fractions": {
+   "0.05": 3125,
+   "0.1": 6251,
+   "0.2": 12502
+  },
+  "hidden_eligible_items": 62510,
+  "rule": "floor(fraction * hidden eligible items), minimum 1"
+ },
+ "changes_vs_v1": [
+  "Judge output gains selected_method, method_parameters, required_data_fields (judge v2 schema); all other Judge fields are kept.",
+  "Deterministic decision compiler added after Transfer Judge (bridgelab/decision_compiler.py, decision-compiler v1).",
+  "Harness prompt transfer_judge.md replaced by transfer_judge_v2.md; other prompts, inputs, budgets, metric, threshold, seeds, and gates unchanged.",
+  "Execution version moves to comparison-exec v2 (new code hash); E0001 and the v1 packet are NOT modified.",
+  "Two-arm driver, three repetitions, and bootstrap/claim-gate wiring are DESIGNED ONLY in docs/decision-compiler-contract.md, not implemented."
+ ],
+ "changes_vs_v2": [
+  "Driver implemented (was design-only): bridgelab/comparison_driver.py comparison-driver v1.2, sequencing arms, gate, scoring, bootstrap, claim.",
+  "Driver report gains a usage section (latency/token/cost aggregation).",
+  "agent.py run_role/run_loop model_call entries now record latency_ms, usage, and cost MISSING (Baseline path already did via muse_runtime).",
+  "17 new final-review synthetic tests (tests/test_final_review.py).",
+  "Unified arm interface (v1.2): run_id/arm/run_index/selected_item_ids/budget/status/failure_reason/model_usage/latency/ledger_path per arm; both arms pass through to_scorer_input before scoring.",
+  "Live caller script (fake + seal-guarded live) and pricing module with a separate price config (no official price recorded: MISSING).",
+  "Full-scale synthetic scorer benchmark (62,510 candidates, bootstrap 1000).",
+  "Prompts, inputs, budgets, metric, threshold, seeds, and gates unchanged since v2; v2 draft retained unmodified (superseded as a draft, not sealed).",
+  "M1 fix 2026-10-27: live pipeline Judge now uses transfer_judge_v2.md; validator requires the 15-field union with v2 rules mirroring the compiler; compatibility specified in contract Section 9; 11 new Judge v2 pipeline/integration/edge tests.",
+  "M5 fix 2026-10-27: bootstrap CI is ITT primary (budget_count required); per-protocol reported secondary only, never gated.",
+  "M4 fix 2026-10-27: driver v1.3 report adds repeat_summary (mean/min/max/range per budget per arm).",
+  "M7 fix 2026-10-27: pair_frequency zero-count tie rule (global mean, then item_id) stated in the contract and compiler docstring.",
+  "M2 pin 2026-10-27: adapt_harness kept but pinned unused by test.",
+  "Fixture migration 2026-10-27: legacy Judge fixtures (test helpers + smoke) updated to emit v2 fields; validator not weakened.",
+  "Execution parameters 2026-10-27 (PROPOSED, NOT SEALED): problem prompt, dataset manifest, and split_ids (derived from packet CSVs, hash-order partition verified) added to the v3 packet; pipeline metric/baseline/confidence/minimum-effect/budget/seed/repeat rule specified in record['execution_parameters'].",
+  "Contract numbering 2026-10-27: Section 9 (compatibility) moved after Section 8 so sections run 1-9 in order; Section 9 content unchanged."
+ ],
+ "changes_vs_v3": {
+  "changed": [
+   "prompts/reporter_v2.md (new): states the validator's schema exactly \u2014 all eight required fields, the claims object shape, the label enum verbatim, executed_result claims may cite only numbers present in the cited executed tool_call entries, no invented entry ids, bare JSON only.",
+   "bridgelab/orchestration.py (one line): ROLE_TO_PROMPT_FILE['reporter'] reporter.md -> reporter_v2.md.",
+   "tests/test_reporter_contract.py (new): 18 contract tests pinning prompt<->validator consistency, audit rejections, retry semantics, and Reporter-failure score isolation."
+  ],
+  "reason": "Live exploration (2026-10-29) found the Reporter prompt and the validator disagree: bridgelab.validation._validate_reporter requires a claims array of {text, label, ledger_entries} objects with label in REPORTER_LABELS, but prompts/reporter.md's output template has no claims field. The live Reporter failed validation in every full live run (claims written as strings or as {statement, 'model-generated hypothesis'} objects; one attempt also wrapped the JSON in Markdown fences, which parse_json_strict rejects).",
+  "unchanged": [
+   "primary metric (precision at the 10% budget, ITT) and the claim gate",
+   "selection logic (Transfer Judge + decision compiler) \u2014 no code or prompt change",
+   "dataset files, split, budgets, baseline prompt, problem prompt \u2014 byte-identical copies of the v3 packet files",
+   "validator and audit code (bridgelab/validation.py, bridgelab/audit.py) \u2014 byte-identical; the prompt was aligned TO the validator, not the other way around"
+  ]
+ },
+ "comparison_driver": {
+  "agent_usage_note": "Pipeline model calls (agent.run_role/run_loop) now record latency_ms, usage, and cost MISSING in ledger model_call entries; Baseline calls via muse_runtime already did.",
+  "module": "bridgelab/comparison_driver.py",
+  "roles": "Sequences Baseline runner + decision compiler x 3 run indices, one HiddenLabelGate, ITT scoring, paired bootstrap, claim gate.",
+  "usage_section": "Aggregates driver-segment model_call ledger entries: n_model_calls, latency_ms_total, prompt/completion/total tokens (None when any counted call lacks complete usage), usage_missing_calls, cost (MISSING without a documented price). Latency is timing and is excluded from fake-run determinism comparisons.",
+  "version": "comparison-driver v1.3"
+ },
+ "decision_compiler": {
+  "allowlist": [
+   "exact_pair_mean",
+   "drug_mean",
+   "pair_frequency"
+  ],
+  "existing_tool_rule": "The existing selected_method tool counts as a Harness result only when explicitly selected by the Judge and recorded as the selected method; this compiler never delegates ranking to it.",
+  "method_parameters": {
+   "drug_mean": {},
+   "exact_pair_mean": {
+    "min_pair_items": "integer >= 1, default 1"
+   },
+   "pair_frequency": {}
+  },
+  "module": "bridgelab/decision_compiler.py",
+  "rules": [
+   "Train data only; no file reads; no hidden-label argument.",
+   "Candidate rows carrying any outcome column are rejected (caller error).",
+   "Ranking is deterministic; final tie-break is always item_id ascending.",
+   "Selection validated with the frozen rules (truncate+flag, dedupe+flag, empty only via Judge none, unknown ids invalidate the whole selection).",
+   "Method and parameters are recorded in the ledger (compiler note).",
+   "The existing compute.selected_method tool is NOT called; rankings are computed here from train rows and the selected method name is recorded."
+  ],
+  "version": "decision-compiler v1"
+ },
+ "execution_parameters": {
+  "dataset_manifest": {
+   "content": {
+    "dataset_id": "nci_almanac_combo",
+    "molecular_structure_available": false,
+    "structure_field": null,
+    "structure_file_hash": null,
+    "structure_source": null
+   },
+   "file": "comparison-prereg-v3/dataset_manifest.json",
+   "note": "Exactly the five keys validate_dataset_manifest requires; molecular structures absent, so structure fields are null.",
+   "sha256": "010728e5080d75521442901c66c7020515ac9b62c0634973edbaa350fd9ea5c5"
+  },
+  "execution_calls": null,
+  "execution_note": "Live-caller defaults: no placeholder execution inside the comparison pipeline run. Comparison scoring happens in the driver (compiler + HiddenLabelGate + scorer), not in the pipeline.",
+  "invocation_note": "Template only: it refuses today because seal E0002 does not exist (the live-caller split-dict fix is in place since 2026-10-27).",
+  "live_caller_invocation": "python3 scripts/run_live_comparison.py --mode live --packet-dir comparison-prereg-v3 --seal-id E0002 --problem-prompt-file comparison-prereg-v3/problem_prompt.md --dataset-manifest-file comparison-prereg-v3/dataset_manifest.json --split-ids-file comparison-prereg-v3/split_ids.json --metric precision_at_10pct_budget --baseline single_muse_call --confidence 0.95 --minimum-effect 0.1 --pipeline-budget-count 6251 --total-items 62510",
+  "max_total_model_steps": 100,
+  "max_total_model_steps_note": "Live-caller value; per-ledger global budget covering 3 pipeline runs (24 role calls) + baseline calls + retries.",
+  "model": "muse-spark-1.3",
+  "pipeline": {
+   "baseline": "single_muse_call",
+   "baseline_definition": "The comparison Baseline arm: one Muse call with comparison-prereg-v3/baseline_prompt.md. Differs from test-fixture label 'random'.",
+   "budget_count": 6251,
+   "budget_fraction": 0.1,
+   "budget_note": "Pipeline budget = the primary 10% budget; the Judge reasons about it and the compiler evaluates the same method at all three comparison budgets.",
+   "comparison_budgets": {
+    "0.05": 3125,
+    "0.1": 6251,
+    "0.2": 12502
+   },
+   "confidence": 0.95,
+   "confidence_note": "Matches the paired bootstrap 95% CI.",
+   "metric": "precision_at_10pct_budget",
+   "metric_definition": "Sealed primary metric: precision at the 10% budget, intention-to-treat, HIT iff observed_score > 0 (borderline |score| <= 1 reported separately, counts as hit). Differs from test-fixture label 'hit_rate'.",
+   "minimum_effect": 0.1,
+   "minimum_effect_note": "Verdict-ceiling parameter only (compute_ceiling); it is NOT the claim gate. The gate requires the ITT CI to exclude 0 and favor harness.",
+   "total_items": 62510
+  },
+  "problem_prompt": {
+   "file": "comparison-prereg-v3/problem_prompt.md",
+   "note": "Full text is the packet file; docs/final-execution-parameters.md quotes it verbatim.",
+   "sha256": "3f5b7592edf5d92c13923de499afdb8ead3d8eb0d3b89d7acede9e0c033c3ec8"
+  },
+  "repeats": {
+   "rule": "Identical inputs and budgets for every index; claim gate applied per index; repeat_summary mean/range is descriptive only; no pooled claim; no index dropped.",
+   "run_indices": [
+    0,
+    1,
+    2
+   ]
+  },
+  "seeds": {
+   "model_seed": "UNAVAILABLE (Muse client exposes no seed/temperature parameter).",
+   "python_seed": 42,
+   "python_seed_covers": "Split ordering, random selection, bootstrap resampling."
+  },
+  "split_ids": {
+   "file": "comparison-prereg-v3/split_ids.json",
+   "format_note": "run_pipeline expects this dict shape (train_ids/hidden_ids/start_set_ids/split_seed/split_method). The live caller loads this file as a JSON object, validates the required keys/types/overlap, and passes the same dict to run_pipeline and comparison_driver (fixed 2026-10-27).",
+   "hidden_pairs": 1049,
+   "ordering": "sha256('42:<pair_id>') ascending, train = first 80%.",
+   "pair_id": "Two NSC strings sorted lexicographically, joined by ':'.",
+   "serialization": "Lists are sorted lexicographically in the file for deterministic hashing; the frozen partition is hash order, verified in this builder.",
+   "sha256": "4a357b1774ffd5c70c872eee7719f627f9190526360f9cffbf8b36d3fc3147e2",
+   "split_method": "sha256_hash_order",
+   "split_seed": 42,
+   "train_pairs": 4193
+  },
+  "status": "PROPOSED FINAL PARAMETERS \u2014 DRAFT FOR REVIEW, NOT SEALED",
+  "verdict_input": null
+ },
+ "failure_handling": {
+  "comparison_driver_usage": {
+   "latency_note": "Latency is timing; fake-run determinism is verified excluding latency_ms_total.",
+   "usage_missing": "Token sums are None when any counted call lacks a complete usage object."
+  },
+  "decision_compiler": {
+   "candidate_rows_with_outcomes": "Caller error (ValueError): candidate rows must never carry outcome columns; fix the caller before any run.",
+   "invalid_judge_output": "Run fails (failed run, 0 hits under ITT).",
+   "invalid_method_parameters": "Run fails (failed run, 0 hits under ITT).",
+   "judge_none": "Counted as none, 0 hits, NOT a failure (unchanged from v1).",
+   "unknown_method": "Run fails (failed run, 0 hits under ITT)."
+  },
+  "duplicate_selections": "Deduplicated and flagged; budget filled from the remaining ranked list if one exists, else left short and flagged.",
+  "empty_or_declined_selection": "Baseline: counted as none, 0 hits. Harness Judge none: counted as none, 0 hits, NOT a failure.",
+  "invalid_json_harness": "Retry <= 2 (<= 3 attempts total); still invalid -> run fails.",
+  "primary_scoring": "Intention-to-treat: a failed run counts as an empty selection (0 hits). Per-protocol scoring (failed runs excluded) is secondary and must be labelled as such.",
+  "selection_exceeds_budget": "Truncate to budget in selection order and flag the truncation; do not silently re-rank.",
+  "timeout_or_api_error": "Run fails; retried only as a new run index, never by editing the failed run's record.",
+  "tool_not_allowlisted_or_invalid_args": "Recorded as error, not executed; if the pipeline cannot proceed -> run fails."
+ },
+ "final_review": {
+  "fake_verification": "scripts/run_fake_comparison_verification.py re-run with driver v1.1: synthetic index 0 claim TRUE (wiring only), index 1 none, index 2 baseline failed, loader calls 1, two runs IDENTICAL excluding latency_ms_total.",
+  "mvp_alignment": "Safe MVP: chemist prompt is already structure-based and says untestable-when-structure-absent; execution uses the math/statistics compiler ranking. No prompt changed in this review; hidden answers stay sealed.",
+  "new_tests": "tests/test_final_review.py (17 tests): pair-across-cells, exact-vs-drug ranking divergence, duplicate/over-budget/unknown as separate cases, driver-level API failure, loader ordering, identical inputs, failed/none at primary budget, partial-budget wins, usage/latency/cost recording.",
+  "status": "completed 2026-10-27",
+  "tests": "194 tests OK (full suite), smoke --fake OK"
+ },
+ "fixture_migration_2026_10_27": {
+  "files": "tests/test_orchestration.py, tests/test_stage1.py, tests/test_stage2.py, tests/test_hardening.py judge fixtures and scripts/smoke_muse.py _judge() now emit the 3 v2 fields (drug_mean/{} /[item_id, nsc1, nsc2, observed_score] for selected, none/{}/[] for none). Test-only and dev-script changes; no sealed packet, seal, or v2 draft touched.",
+  "reason": "The 15-field union validator legitimately broke 39 legacy pipeline tests whose Judge fixtures emitted v1-only output; the validator was NOT weakened to make them pass.",
+  "result": "Full suite 220 tests OK, smoke --fake OK (28 entries, verify True)."
+ },
+ "harness_prompts": {
+  "change_note": "Reporter prompt swapped reporter.md -> reporter_v2.md: the v2 prompt states the validator's exact output contract (the claims field the v1 prompt never specified). All other prompt files are byte-identical to v3.",
+  "change_vs_v3": "reporter.md replaced by reporter_v2.md; no other prompt changed.",
+  "combined_construction": "SHA-256 over, in pipeline order, each (filename + newline + file bytes + newline).",
+  "combined_sha256": "9d34668eb547ef71c855b9d4b46d28fa6d8b71134d02d136aa61a69db3042ce7",
+  "file_hashes": {
+   "biology_validator.md": "e6b1b70849a0beb204e15b8f5b275d37f67ef2e05d43a3f62e949cf49b3338f7",
+   "chemist.md": "ba7511d2373d620acf33b34e805d7640447e9aad467b056840edb0371c4933e4",
+   "critic_v2.md": "77af08c0144e76f71fca2be63495174a694db52db4d388f4d0483e89792cdba0",
+   "mathematician.md": "2328a5e1acbcfc3f8de5931df70058da9df3f4e05548de6675bf762201d29527",
+   "physicist.md": "0cabf2f99d389f0fe79b07c004fcb539af47866eda8d586b0e430f09cac6a114",
+   "problem_structurer.md": "814084a56ac0018bf037bafae54b312e89b78e12ba5f11e269675b57165253ee",
+   "reporter_v2.md": "a323b9ba41cb94ed1df26dc4ee8bcdb6dc4677550bb8cb3bfae51ffa8df46639",
+   "transfer_judge_v2.md": "1ab752cd1a8f627330ec6555cb6eaeb7c984e01aac63e501fb071f6ff2f61a62"
+  },
+  "order": [
+   "problem_structurer.md",
+   "mathematician.md",
+   "physicist.md",
+   "chemist.md",
+   "biology_validator.md",
+   "transfer_judge_v2.md",
+   "critic_v2.md",
+   "reporter_v2.md"
+  ]
+ },
+ "hashes": {
+  "baseline_prompt_sha256": "39f95651ae508f71eed17ea2fc373f43a7629a08c92293cbcaf1dfc6266d1a8f",
+  "dataset_raw_sha256": "69367a8b654908ebf70a752548c8d240fda2b751336eff0241a5986628696100",
+  "harness_prompts_combined_sha256": "9d34668eb547ef71c855b9d4b46d28fa6d8b71134d02d136aa61a69db3042ce7",
+  "hidden_candidates_sha256": "a47c63c3a78ddb56139798e6542eb303359114b39ba3115df0ee3a10f0933b7d",
+  "pool_hash": "374d58fac23b50d13eef167b8c9437b40fce22cc0916d152babd579c1aeda01c",
+  "split_hash": "3383719d39d237463f15eec7866aad7cd5c31a5808a47995d260d204e75e57e5",
+  "train_items_sha256": "b40981828f91ef4d10d0231cf0f6145eb9dc4c4ded4373292960a12dd80b25e5"
+ },
+ "hidden_label_boundary": {
+  "hidden_candidates_sha256": "a47c63c3a78ddb56139798e6542eb303359114b39ba3115df0ee3a10f0933b7d",
+  "hidden_label_inspection": "No hidden label was computed, inspected, or stored during freezing. The freeze script parsed hidden outcome columns for nothing and wrote none.",
+  "information_boundary": "Arms see train items (all columns + scores) and hidden candidate identities (ordered NSC pair + CELLNAME + grid size + concentration grid, no outcomes). Arms NEVER see hidden combination rows' PERCENTGROWTH, EXPECTEDGROWTH, or SCORE, or any aggregate thereof, and hidden labels are never passed to expert proposal generation. Single-agent rows are visible as assay context only: they carry no combination outcome, and a label cannot be derived from them alone (it requires hidden combination PERCENTGROWTH).",
+  "label_rule": "Hidden HIT/BORDERLINE labels are Python-computed from file columns at scoring time only, after both arms have run."
+ },
+ "impact_audit": {
+  "evidence": [
+   "File-level: every v4 packet input file except the harness prompt set hashes identically to v3 (asserted by the builder).",
+   "Code-level: hashing the current bridgelab/*.py set with the single ROLE_TO_PROMPT_FILE reporter line reverted reproduces the v3 combined code hash exactly (asserted in scripts/build_preregistration_v4.py), so the reporter line is the only code difference.",
+   "Position: the Reporter runs after execution and verdict. The comparison caller reads the Judge from the pipeline state even when a run fails at the Reporter (scripts/run_live_comparison.py), and tests/test_reporter_contract.py proves the Judge artifact is identical with a healthy and an always-failing Reporter. The Reporter therefore cannot change the selection the driver scores.",
+   "Validation: 273 tests pass (255 prior + 18 new contract tests); the fake pipeline smoke and the fake comparison verification pass unchanged; one live Reporter call with reporter_v2.md passed validation on the first attempt with its claims audit ok."
+  ],
+  "primary_metric_changed": false,
+  "selection_logic_changed": false
+ },
+ "input_packet": {
+  "counts": {
+   "eligible_groups": 311466,
+   "hidden_candidates": 62510,
+   "hidden_pairs": 1049,
+   "train_items": 248956,
+   "train_pairs": 4193
+  },
+  "definition": "Byte-identical to v1 inputs (same files, same hashes). Only the harness Judge prompt and the execution contract change in v2.",
+  "files": {
+   "hidden_candidates.csv": {
+    "columns": [
+     "item_id",
+     "nsc1",
+     "nsc2",
+     "cellname",
+     "grid_n",
+     "conc1_values",
+     "conc2_values"
+    ],
+    "outcome_note": "No outcome columns. Concentration values sorted numerically per item.",
+    "rows": 62510,
+    "sha256": "a47c63c3a78ddb56139798e6542eb303359114b39ba3115df0ee3a10f0933b7d"
+   },
+   "train_items.csv": {
+    "columns": [
+     "item_id",
+     "nsc1",
+     "nsc2",
+     "cellname",
+     "grid_n",
+     "observed_score",
+     "per_point_differences"
+    ],
+    "rows": 248956,
+    "score_note": "observed_score = mean of per-point (EXPECTEDGROWTH - PERCENTGROWTH), rounded to 6 decimal places in the packet; per-point differences in file encounter order, 3 decimals.",
+    "sha256": "b40981828f91ef4d10d0231cf0f6145eb9dc4c4ded4373292960a12dd80b25e5"
+   }
+  }
+ },
+ "judge_v2": {
+  "consistency": "selected_domain none requires selected_method none; a selected domain requires a real selected_method.",
+  "prompt_file": "prompts/transfer_judge_v2.md",
+  "required_fields": [
+   "selected_domain",
+   "selected_principle",
+   "selected_method",
+   "method_parameters",
+   "prediction",
+   "falsifier",
+   "required_data_fields"
+  ],
+  "schema_version": "judge-v2",
+  "validator": "bridgelab/decision_compiler.py validate_judge_output"
+ },
+ "live_caller": {
+  "artifact": "One JSON file: manifest + driver report + full ledger entries; scrub-checked for credential material before writing.",
+  "gate": "Hidden labels open only through the driver gate after both arms finish.",
+  "modes": "fake (synthetic, no packet/raw/label read) and live (seal-guarded; refuses without a matching seal record).",
+  "script": "scripts/run_live_comparison.py"
+ },
+ "m1_fix_2026_10_27": {
+  "compatibility": "Pipeline-valid implies compiler-valid for the 7 shared Judge fields; the reverse is not guaranteed (the pipeline additionally requires the 8 v1-only fields and an empty principle when domain is none). Compiler consumes 7 fields and ignores the 8 v1-only fields. Full statement: docs/decision-compiler-contract.md Section 9.",
+  "evidence": "tests/test_judge_v2_pipeline.py: full run_pipeline with real load_role_prompts asserts exactly one Judge call whose first message equals the v2 prompt file text and whose state['judge'] compiles exactly (drug_mean) via compile_decision.",
+  "integration_tests": "11 new tests: prompt mapping, exact-field compile for drug_mean and exact_pair_mean, full pipeline integration, invalid v2 JSON (malformed, missing method, bogus method), none, parameter mismatches (4 cases), domain-method contradictions (2 cases), adapt_harness no-production-caller pin, repeat summary, ITT bootstrap divergence and budget requirement.",
+  "pipeline_prompt_mapping": "bridgelab/orchestration.py ROLE_TO_PROMPT_FILE transfer_judge now maps to transfer_judge_v2.md; the v1 prompt file is retained unmodified and is no longer wired live.",
+  "status": "implemented and tested 2026-10-27; E0002 NOT created",
+  "validator_union": "bridgelab/validation.py _validate_judge now requires the 15-field union (12 v1 + selected_method, method_parameters, required_data_fields), exact-set rejection of unknown fields kept, and v2 rules mirroring the compiler: method enum, domain none iff method none, per-method parameter schemas, required_data_fields restricted to the 9 allowlisted fields."
+ },
+ "m2_adapt_harness_pinned": {
+  "decision": "adapt_harness is NOT deleted; it is pinned unused by test.",
+  "test": "tests/test_judge_v2_pipeline.py AdaptHarnessPinnedUnusedTests: comparison_driver has no adapt_harness attribute and a source scan of bridgelab/*.py (except comparison.py) and scripts/*.py finds no adapt_harness reference."
+ },
+ "m4_repeat_summary": {
+  "driver_version": "comparison-driver v1.3",
+  "field": "report['repeat_summary'][budget][arm] = {n_repeats, mean_precision, min_precision, max_precision, range_precision} computed from per-index ITT precisions; no index dropped."
+ },
+ "m5_itt_bootstrap": {
+  "callers_updated": "comparison_driver.evaluate_index and benchmark_scorer pass budget_count; direct bootstrap tests updated; budget_count=None raises ValueError.",
+  "primary": "paired_bootstrap_ci now requires budget_count and returns the ITT precision difference (h_hit - b_hit) / budget_count as observed_difference with method paired_by_pair_bootstrap_95pct_itt; one replicate loop, shared effective-replicate set, <100 effective replicates yields None CIs.",
+  "secondary": "Per-protocol difference (hits/selected) is reported only under per_protocol and is never passed to the claim gate; evaluate_claim_gate requires ci_low > 0 (ITT) plus wins at >= 2 of 3 budgets."
+ },
+ "m7_tie_rule": {
+  "recorded_in": "docs/decision-compiler-contract.md pair_frequency row, bridgelab/decision_compiler.py module docstring (docstring-only change; behavior unchanged).",
+  "rule": "pair_frequency: zero-train-item pairs rank by the global train mean as tie-break key; all such pairs tie on that key and then order by item_id ascending."
+ },
+ "measurement": {
+  "cost": "Tokens x documented price at run time, or MISSING if no price is documented. Never invent a price.",
+  "latency": "Wall-clock per arm per run, split into model time vs Python time, measured by the application, never self-reported by the model.",
+  "limitations": [
+   "Model sampling seed unavailable in the current client (see model_seed_capability).",
+   "Token usage reporting unconfirmed until a live call succeeds.",
+   "Cost comparison impossible unless a price is documented at run time.",
+   "Live run additionally blocked by team billing restriction, by the Muse client living in uploads only (not in bridge-lab), and by the uncaught-MuseError gap in agent.run_role \u2014 all must be resolved before RUNNING, none blocks SEALING this packet."
+  ],
+  "tokens": "Prompt + completion tokens from the API usage object IF present in the response dict. Availability: UNCONFIRMED \u2014 the client returns the full response dict so usage could be extracted, but no successful live call has ever returned one (billing blocked). If absent at run time, record MISSING; never estimate from text length."
+ },
+ "metric_and_threshold": {
+  "borderline": "Items with |observed_score| <= 1 are additionally labelled BORDERLINE and always reported separately; they count as hits under the primary rule.",
+  "hit_rule": "HIT iff observed_score > 0.",
+  "item": "One ordered (NSC1, NSC2, CELLNAME) group with a complete grid (9 or 15 dose points, all scored).",
+  "observed_score": "Unrounded mean over dose points of (EXPECTEDGROWTH - PERCENTGROWTH) from file columns. The CSV SCORE column is NOT used.",
+  "sensitivity_note": "Sensitivity thresholds are pre-registered secondary analyses, not published standards.",
+  "sensitivity_thresholds": [
+   5,
+   10
+  ]
+ },
+ "model": {
+  "identifier": "muse-spark-1.3",
+  "identifier_note": "If MUSE_MODEL or any runtime override differs at run time, this pre-registration is invalid and must be re-frozen."
+ },
+ "model_seed_capability": {
+  "available": false,
+  "consequence": "'Same seed' covers Python only (split, random baseline, bootstraps: seed 42). Model sampling seed is unavailable; each arm is repeated over 3 fixed run indices and variance across repeats is reported.",
+  "evidence": "Verified by reading the Muse client (uploads muse.py): chat(messages, tools=None) sends model + messages (+ tools if given). It has no seed parameter and no temperature parameter."
+ },
+ "packet_hash": "478d0edbe60150de11e4e364d64312fc979c4b9b818ab9390d837b2d877409e5",
+ "packet_hash_construction": "SHA-256 over train_file_hash + newline + hidden_file_hash + newline + baseline_prompt_hash + newline + harness_combined_hash + newline + canonical sorted JSON of this record without the packet_hash field.",
+ "pipeline_code_supplementary": {
+  "combined_sha256": "e7337ad3c610e2ca02827a2b3c6de1278ed1ffb41c094d09a0a640ef2df73ffb",
+  "files": [
+   "__init__.py",
+   "agent.py",
+   "audit.py",
+   "clients.py",
+   "comparison.py",
+   "comparison_driver.py",
+   "compute.py",
+   "decision_compiler.py",
+   "fake.py",
+   "ledger.py",
+   "measurements.py",
+   "muse.py",
+   "muse_runtime.py",
+   "orchestration.py",
+   "pricing.py",
+   "rerun.py",
+   "seal.py",
+   "tools.py",
+   "validation.py",
+   "verdict.py"
+  ],
+  "note": "Supplementary. One line differs from the v3 execution version: bridgelab/orchestration.py ROLE_TO_PROMPT_FILE['reporter'] reporter.md -> reporter_v2.md. Proof: hashing the current file set with that line reverted reproduces the v3 combined code hash exactly (asserted by the builder). No scoring, selection, metric, or validation code changed."
+ },
+ "preregistration_version": "comparison-prereg v4 DRAFT, 2026-10-29 (NOT SEALED)",
+ "pricing": {
+  "config": "bridgelab/model_prices.json (separate file; currently no official price recorded, so all costs are MISSING).",
+  "module": "bridgelab/pricing.py",
+  "rule": "No price is ever estimated; cost is MISSING without an official price with version and source."
+ },
+ "product_claim": "BRIDGE LAB decides what to test next under a limited experimental budget, without post-hoc justification.",
+ "proposed_seal": "E0003 (PROPOSED ONLY, NOT CREATED)",
+ "python_seed": 42,
+ "readiness_for_sealing": {
+  "conditions": [
+   "User reviews this packet as displayed.",
+   "No field changes after seal creation; any pre-seal change requires re-freeze, new hash, new review display.",
+   "The E0003 seal is created only on the user's explicit approval."
+  ],
+  "not_ready_for_running": [
+   "E0003 has not been created; no arm may run under v4 until it exists."
+  ]
+ },
+ "reporter_v2": {
+  "contract_tests": "tests/test_reporter_contract.py (18 tests, all passing)",
+  "file": "prompts/reporter_v2.md",
+  "live_single_call": "PASS 2026-10-29: first attempt valid; evidence_level copied; executed_result claim cited the executed entry and only its numbers; claims audit ok.",
+  "sha256": "a323b9ba41cb94ed1df26dc4ee8bcdb6dc4677550bb8cb3bfae51ffa8df46639",
+  "validator": "bridgelab/validation.py _validate_reporter + REPORTER_LABELS; claims audited by bridgelab/audit.py audit_reporter_claims"
+ },
+ "review_note": "DRAFT packet for final code review only. No seal has been created and neither arm has run. Proposed seal id E0002 does NOT exist yet: it is created only after the user reviews the final code and this packet and explicitly approves seal creation. E0001, the v1 packet, and the v2 draft are NOT modified by this draft.",
+ "seal_status": "NOT_CREATED",
+ "status": "DRAFT_FOR_REVIEW",
+ "unified_arm_interface": {
+  "arm_record_fields": [
+   "run_id",
+   "arm",
+   "run_index",
+   "selected_item_ids",
+   "budget",
+   "status",
+   "failure_reason",
+   "model_usage",
+   "latency",
+   "ledger_path"
+  ],
+  "saved_reports": "Report summaries carry hashes, counts, usage, and latency, never id lists.",
+  "scorer_input": "Both arms pass through to_scorer_input to {status, ids} before score_selection, so the Python scorer receives both candidate lists in exactly the same way.",
+  "version": "comparison-driver v1.3"
+ }
+}

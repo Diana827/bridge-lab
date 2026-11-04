@@ -1,0 +1,16 @@
+# Local credentials
+.env
+
+# Runtime state and potentially sensitive model transcripts
+server/runs/
+server/tests/
+
+# Python cache and local OS metadata
+__pycache__/
+*.py[cod]
+.DS_Store
+
+# Local safety copies (not for the public repo)
+*.backup-*
+*.bak*
+dist/

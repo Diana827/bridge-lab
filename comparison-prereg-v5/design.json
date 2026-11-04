@@ -1,0 +1,134 @@
+{
+  "seal_id": "E0004",
+  "status": "DRAFT_UNSEALED",
+  "drafted": "2026-11-03",
+  "supersedes_nothing": "E0003 and the v1-v4 packets are preserved historical records and are not modified.",
+  "question": "When both arms rank candidates with the same Python code, does the BRIDGE LAB pipeline choose a better ranking method than one model call?",
+  "arms": {
+    "harness": {
+      "description": "BRIDGE LAB pipeline: Problem Structurer, Mathematics, Physics, Chemistry, Biology Validator, Transfer Judge, then Python ranking.",
+      "method_allowlist": [
+        "exact_pair_mean",
+        "drug_mean",
+        "pair_frequency",
+        "drug_cell_mean",
+        "structure_cell_knn"
+      ],
+      "judge_prompt": "prompts/transfer_judge_v3.md",
+      "ranking_code": "bridgelab/decision_compiler_v2.py (compile_decision_v2)",
+      "build_status": "BUILT AND TESTED OFFLINE: replaying a real recorded run through run_pipeline_v2 reproduces its Judge output; a drug_cell_mean Judge output is accepted and executed (server/test_e0004.py). Never run against a live model.",
+      "entry_point": "bridgelab/harness_v2.py (run_pipeline_v2); orchestration_v2 is derived from orchestration.py by three asserted replacements",
+      "execution_callback": "server/compute_test_v2.py (execution_callback_v2)",
+      "pipeline_settings": {
+        "metric": "precision_at_5pct_budget",
+        "baseline": "single_muse_call",
+        "budget_fraction": 0.05,
+        "total_items": 293626,
+        "max_total_model_steps": 100,
+        "note": "Mirrors the live caller in server/bridge_server.py. The E0003 comparison caller is not in this package, so confirm these match it before sealing. The Judge output is compiled once per frozen budget."
+      }
+    },
+    "baseline": {
+      "description": "One model call chooses one allowlisted method. Python ranks with the same code as the Harness.",
+      "prompt": "bridgelab/criterion_baseline.py (PROMPT_TEMPLATE)",
+      "code": "bridgelab/criterion_baseline.py",
+      "build_status": "BUILT AND TESTED OFFLINE (server/test_e0004.py)"
+    },
+    "reference_only": {
+      "description": "Deterministic Python methods and random selection, reported without any claim.",
+      "methods": [
+        "exact_pair_mean",
+        "drug_mean",
+        "pair_frequency",
+        "drug_cell_mean",
+        "structure_cell_knn",
+        "random(seed 42)"
+      ]
+    }
+  },
+  "split": {
+    "mode": "reuse_v4",
+    "source": "comparison-prereg-v4/split_ids.json",
+    "train_pairs": 4193,
+    "hidden_pairs": 1049,
+    "hidden_candidates": 62510,
+    "note": "The E0003 split is reused unchanged. No new split is drawn."
+  },
+  "budgets": {
+    "fractions": [
+      0.05,
+      0.1,
+      0.2
+    ],
+    "primary_fraction": 0.1,
+    "counts": [
+      3125,
+      6251,
+      12502
+    ],
+    "count_rule": "Same frozen counts as E0003 (5%, 10% and 20% of the 62,510 hidden candidates)."
+  },
+  "runs": {
+    "indices": [
+      0,
+      1,
+      2
+    ],
+    "note": "Each index is one independent run of each arm."
+  },
+  "hit_rule": "observed_score > 0 (strict)",
+  "primary_metric": "precision at the primary budget under intention-to-treat; a failed run scores 0",
+  "gate": {
+    "per_index": "comparison.evaluate_claim_gate, unchanged: primary CI lower bound > 0 and Harness strictly ahead at >= 2 of 3 budgets",
+    "study_level": "Superiority is claimed only if the per-index gate passes at >= 2 of the 3 run indices and no index has a primary CI favoring the baseline.",
+    "tie_rule": "If both arms choose the same method at an index, their selections are identical, the difference is exactly 0, and that index counts as a tie, not a failure."
+  },
+  "hidden_labels": {
+    "opened": "once, after both arms finish or fail",
+    "gate": "comparison.HiddenLabelGate",
+    "private_path": "outside comparison-prereg-v5/, never committed"
+  },
+  "development_evidence_not_E0004_evidence": {
+    "data": "comparison-prereg-v4/train_items.csv, pair-disjoint 80/20 train holdout, seeds 42, 7, 99",
+    "precision_at_5_10_20_percent_mean_of_3_seeds": {
+      "drug_mean": [
+        0.572,
+        0.541,
+        0.489
+      ],
+      "drug_cell_mean": [
+        0.661,
+        0.611,
+        0.541
+      ],
+      "structure_cell_knn": [
+        0.721,
+        0.656,
+        0.573
+      ],
+      "exact_pair_mean": "identical ranking to drug_mean on unseen pairs",
+      "pair_frequency": "about 0.32, 0.34, 0.31 (seed 42), near the random rate of about 0.30"
+    },
+    "disclosure": "drug_cell_mean and structure_cell_knn were added after train-only analyses on the v4 train labels. The E0003 hidden pairs were not part of them and no per-item hidden label has been seen by anyone. Two things are known about the hidden set: E0003 aggregate precision for the Harness (0.6070, 0.5769, 0.5034 at 5%, 10%, 20%), and that its labels were loaded once for E0003.",
+    "structure_cell_knn_note": "Fixed before this analysis was finished: K=30, power 2, alpha 0.5 (alpha 1.0 was the only other value tried and was slightly worse at every budget). It beat drug_cell_mean in all 3 seeds at all 3 budgets."
+  },
+  "packet_files": [
+    "comparison-prereg-v5/PREREG_E0004.md",
+    "bridgelab/decision_compiler_v2.py",
+    "bridgelab/criterion_baseline.py",
+    "prompts/transfer_judge_v3.md",
+    "comparison-prereg-v4/split_ids.json",
+    "bridgelab/harness_v2.py",
+    "server/compute_test_v2.py",
+    "bridgelab/orchestration.py",
+    "bridgelab/validation.py",
+    "bridgelab/agent.py",
+    "bridgelab/decision_compiler.py",
+    "bridgelab/comparison.py",
+    "bridgelab/comparison_driver.py",
+    "bridgelab/muse_runtime.py",
+    "comparison-prereg-v4/inputs/nsc_smiles.csv",
+    "bridgelab/comparison_driver_v2.py"
+  ],
+  "rdkit": "Fingerprints depend on the RDKit version; record it in the ledger when the Harness runs (installed: 2025.09.2)."
+}

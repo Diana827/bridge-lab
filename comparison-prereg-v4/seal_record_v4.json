@@ -1,0 +1,18 @@
+{
+ "arms_run": false,
+ "execution_code_combined_sha256": "e7337ad3c610e2ca02827a2b3c6de1278ed1ffb41c094d09a0a640ef2df73ffb",
+ "harness_prompts_combined_sha256": "9d34668eb547ef71c855b9d4b46d28fa6d8b71134d02d136aa61a69db3042ce7",
+ "hidden_labels_read": false,
+ "ledger_entries": 1,
+ "ledger_file": "comparison-prereg-v4/seal_ledger.jsonl",
+ "ledger_verify": true,
+ "note": "Only the commit hash is in the ledger. The payload + nonce live in seal_secret.json for a future single reveal; the nonce is not printed here or in chat. This seal binds the v4 comparison packet (Reporter v2 contract version, including its execution code hash); it is not an experiment seal (no hypothesis has been selected; no arm has run). E0002 and the v1/v2/v3 packets are preserved historical records and were not modified.",
+ "packet_fields_changed": false,
+ "packet_hash": "478d0edbe60150de11e4e364d64312fc979c4b9b818ab9390d837b2d877409e5",
+ "reporter_prompt_sha256": "a323b9ba41cb94ed1df26dc4ee8bcdb6dc4677550bb8cb3bfae51ffa8df46639",
+ "seal_entry_id": "E0001",
+ "seal_entry_ledger_hash": "8e07d88f249bc071a3f8ae6a31409b34c177839d3006a4ef5286630249231bdd",
+ "seal_hash": "a7d7ae84a3d8e6ae0acac0f3ecb968aba5a2240ce25c7de32c24077834b897e1",
+ "seal_hash_recomputed": true,
+ "seal_id": "E0003"
+}

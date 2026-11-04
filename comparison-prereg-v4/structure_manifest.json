@@ -1,0 +1,11 @@
+{
+  "dataset_id": "nci_almanac_combo",
+  "molecular_structure_available": true,
+  "structure_field": "smiles",
+  "structure_file_hash": "6286331a62052168003c40a6627ab70fab3087d185c4d7a8659f03b26360cfbb",
+  "structure_source": "nsc_structure.csv",
+  "structure_coverage": 0.980392,
+  "structure_count": 103,
+  "structure_invalid_count": 1,
+  "structure_status": "ready"
+}

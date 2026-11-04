@@ -1,0 +1,68 @@
+{
+ "arms_run": false,
+ "baseline_prompt_sha256": "39f95651ae508f71eed17ea2fc373f43a7629a08c92293cbcaf1dfc6266d1a8f",
+ "budgets_floor": {
+  "0.05": 3125,
+  "0.1": 6251,
+  "0.2": 12502
+ },
+ "dataset_manifest_sha256": "010728e5080d75521442901c66c7020515ac9b62c0634973edbaa350fd9ea5c5",
+ "eligible_groups": 311466,
+ "harness_prompts_combined_sha256": "9d34668eb547ef71c855b9d4b46d28fa6d8b71134d02d136aa61a69db3042ce7",
+ "harness_prompts_file_hashes": {
+  "biology_validator.md": "e6b1b70849a0beb204e15b8f5b275d37f67ef2e05d43a3f62e949cf49b3338f7",
+  "chemist.md": "ba7511d2373d620acf33b34e805d7640447e9aad467b056840edb0371c4933e4",
+  "critic_v2.md": "77af08c0144e76f71fca2be63495174a694db52db4d388f4d0483e89792cdba0",
+  "mathematician.md": "2328a5e1acbcfc3f8de5931df70058da9df3f4e05548de6675bf762201d29527",
+  "physicist.md": "0cabf2f99d389f0fe79b07c004fcb539af47866eda8d586b0e430f09cac6a114",
+  "problem_structurer.md": "814084a56ac0018bf037bafae54b312e89b78e12ba5f11e269675b57165253ee",
+  "reporter_v2.md": "a323b9ba41cb94ed1df26dc4ee8bcdb6dc4677550bb8cb3bfae51ffa8df46639",
+  "transfer_judge_v2.md": "1ab752cd1a8f627330ec6555cb6eaeb7c984e01aac63e501fb071f6ff2f61a62"
+ },
+ "harness_prompts_order": [
+  "problem_structurer.md",
+  "mathematician.md",
+  "physicist.md",
+  "chemist.md",
+  "biology_validator.md",
+  "transfer_judge_v2.md",
+  "critic_v2.md",
+  "reporter_v2.md"
+ ],
+ "hidden_candidates": 62510,
+ "hidden_candidates_sha256": "a47c63c3a78ddb56139798e6542eb303359114b39ba3115df0ee3a10f0933b7d",
+ "inputs_copied_byte_identical_from_v3": [
+  "train_items.csv",
+  "hidden_candidates.csv",
+  "baseline_prompt.md",
+  "problem_prompt.md",
+  "dataset_manifest.json",
+  "split_ids.json"
+ ],
+ "packet": "comparison-prereg-v4",
+ "packet_hash": "478d0edbe60150de11e4e364d64312fc979c4b9b818ab9390d837b2d877409e5",
+ "pipeline_code_supplementary_combined_sha256": "e7337ad3c610e2ca02827a2b3c6de1278ed1ffb41c094d09a0a640ef2df73ffb",
+ "problem_prompt_sha256": "3f5b7592edf5d92c13923de499afdb8ead3d8eb0d3b89d7acede9e0c033c3ec8",
+ "prompt_changes": "reporter.md -> reporter_v2.md only (Reporter output contract aligned to the validator).",
+ "proposed_seal": "E0003 (PROPOSED ONLY, NOT CREATED)",
+ "seal_status": "NOT_CREATED",
+ "split": {
+  "hidden_pairs": 1049,
+  "ordering": "sha256('42:<pair_id>'), train = first 80% in hash order",
+  "pair_id": "two NSC strings sorted lexicographically, joined by ':'",
+  "seed": 42,
+  "train_fraction": 0.8,
+  "train_pairs": 4193,
+  "unit": "unordered_pair"
+ },
+ "split_ids": {
+  "hidden_pairs": 1049,
+  "split_method": "sha256_hash_order",
+  "split_seed": 42,
+  "train_pairs": 4193
+ },
+ "split_ids_sha256": "4a357b1774ffd5c70c872eee7719f627f9190526360f9cffbf8b36d3fc3147e2",
+ "supersedes_packet": "comparison-prereg-v3 (sealed by E0002, preserved untouched)",
+ "train_items": 248956,
+ "train_items_sha256": "b40981828f91ef4d10d0231cf0f6145eb9dc4c4ded4373292960a12dd80b25e5"
+}
