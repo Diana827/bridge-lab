@@ -1,0 +1,39 @@
+{
+  "rdkit_version": "2025.09.2",
+  "method": "Morgan fingerprint, radius 2, 2048 bits, Tanimoto; salts removed (largest fragment kept)",
+  "tanimoto": 0.094,
+  "bits_on": {
+    "A": 90,
+    "B": 61,
+    "shared": 13
+  },
+  "compounds": {
+    "A": {
+      "nsc": "NSC 3053",
+      "name": "Dactinomycin",
+      "parent_smiles": "Cc1c2oc3c(C)ccc(C(=O)NC4C(=O)NC(C(C)C)C(=O)N5CCCC5C(=O)N(C)CC(=O)N(C)C(C(C)C)C(=O)OC4C)c3nc-2c(C(=O)NC2C(=O)NC(C(C)C)C(=O)N3CCCC3C(=O)N(C)CC(=O)N(C)C(C(C)C)C(=O)OC2C)c(N)c1=O",
+      "mol_weight": 1255.44,
+      "logp_crippen": 0.73,
+      "tpsa": 360.0,
+      "hbd": 5,
+      "hba": 18,
+      "rotatable_bonds": 8,
+      "heavy_atoms": 90,
+      "ring_count": 7
+    },
+    "B": {
+      "nsc": "NSC 702294",
+      "name": "Estramustine sodium phosphate",
+      "parent_smiles": "C[C@]12CC[C@@H]3c4ccc(OC(=O)N(CCCl)CCCl)cc4CC[C@H]3[C@@H]1CC[C@@H]2OP(=O)(O)O",
+      "mol_weight": 520.39,
+      "logp_crippen": 5.3,
+      "tpsa": 96.3,
+      "hbd": 2,
+      "hba": 4,
+      "rotatable_bonds": 7,
+      "heavy_atoms": 33,
+      "ring_count": 4
+    }
+  },
+  "scope": "Structure calculation only. Not used for ranking. Not docking. Not binding evidence."
+}

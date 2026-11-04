@@ -1,0 +1,13 @@
+Files added from the BRIDGE LAB VM project on 2026-11-03 (merge of the final Mac package):
+- comparison-prereg-v4/preregistration_v4.json, packet_manifest_v4.json, seal_ledger.jsonl,
+  hidden_candidates.csv (sealed candidate list: item ids only, no observed scores),
+  baseline_prompt.md, problem_prompt.md
+- evidence/e0003-run/ : E0003 sealed comparison outputs (attempt 2 result + manifest +
+  ledger snapshot, attempt 1 interruption record)
+- scripts/run_live_comparison.py (the sealed-comparison caller; the only code path that
+  opens hidden labels, once, after both arms), create_comparison_seal_v4.py,
+  build_preregistration_v4.py, freeze_comparison_packet.py
+- provenance/DATA.md, BUILD_START.md
+NOT included, by design: comparison-prereg-v4/seal_secret.json (seal secret, never packaged)
+and candidate_observed_HIDDEN.csv (hidden observed scores; received 2026-11-03, never opened,
+stored VM-only; sha256 8ea32a733480cc0a202fb17d9a5327c8edff81b7908a54f5e496da372852fe17).

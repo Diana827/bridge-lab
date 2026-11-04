@@ -1,0 +1,6 @@
+# Runtime dependency for the deterministic train-only computational test.
+# Muse access is provided through the user's secure MODEL_API_KEY environment
+# variable; no credential is stored in this file.
+numpy>=1.24,<3
+# Structure calculations in the Evidence tab (scripts/structure_similarity.py).
+rdkit>=2024.3
