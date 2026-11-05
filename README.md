@@ -12,7 +12,7 @@ BRIDGE LAB takes one scientific question, examines it through five lenses (mathe
 
 *The Lenses tab: a scripted illustration of the five lenses challenging each other before the Transfer Judge decides.*
 
-**Demo video:** [Watch the demo on YouTube](https://youtu.be/UtKmwB9UKhw) (3 minutes). The homepage's "Watch the demo" button opens the same link.
+**Demo video:** [Watch the demo on YouTube](https://youtu.be/lPg-_okE1gE). The homepage's "Watch the demo" button opens the same link.
 
 Built during the Meta Global AI Developer Hackathon (Indie Developer track).
 
