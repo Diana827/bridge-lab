@@ -2568,15 +2568,7 @@ function openLive() {
   return true;
 }
 function openDemo() {
-  if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
-    window.open('preview.html', '_blank'); return;
-  }
-  showTab('overview');
-  setTimeout(function () {
-    var s = document.getElementById('roundtable');
-    if (s) s.scrollIntoView({behavior: 'smooth', block: 'start'});
-    playTable();
-  }, 120);
+  window.open('https://youtu.be/UtKmwB9UKhw', '_blank');
 }
 document.querySelectorAll('.rt-seat').forEach(function (s) {
   var m = (s.getAttribute('onclick') || '').match(/seatTable\('(\w+)'\)/);
